@@ -17,7 +17,7 @@ public class SQLBuilder<T extends Persistent> {
         List<String> sqlFields = sqlInformations.getFields(clazz);
 
         return "INSERT INTO " + sqlInformations.getTableName(clazz).toUpperCase() +
-                " (" + String.join(", ", sqlFields) + ") VALUES(" + getValues(sqlFields) + ")";
+                " (" + String.join(", ", sqlFields) + ") VALUES(" + getValues(sqlFields) + ");";
     }
 
     public void saveStatement(PreparedStatement stm, T entity){

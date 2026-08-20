@@ -9,6 +9,8 @@ public class UserController implements Persistent {
 
     @GetFields(name = "name")
     private String name;
+    @GetFields(name = "age")
+    private int age;
     @GetFields(name = "code")
     private String code;
     @GetFields(name = "email")
@@ -19,12 +21,9 @@ public class UserController implements Persistent {
     private String number;
     @GetFields(name = "permission")
     private String permission;
-    @GetFields(name = "age")
-    private int age;
 
-    public UserController(){}
-    public UserController(String name, String code, String email, String adress, String number,
-                          String permission, int age) {
+    public UserController(String name, int age,  String code, String email, String adress, String number,
+                          String permission) {
         this.name = name;
         this.code = code;
         this.email = email;
@@ -33,6 +32,7 @@ public class UserController implements Persistent {
         this.permission = permission;
         this.age = age;
     }
+    public UserController(){}
 
     public String getName() {
         return name;

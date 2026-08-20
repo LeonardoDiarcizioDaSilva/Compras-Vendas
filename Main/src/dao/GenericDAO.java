@@ -2,9 +2,8 @@ package dao;
 
 import connectionFactory.ConnectionFactory;
 import dao.sqlBuilder.SQLBuilder;
-import dao.sqlBuilder.GetSQLInformations;
 import models.Persistent;
-import models.userController.userThrows.NotUserFinded;
+import models.userController.userThrows.NotUserFound;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -39,7 +38,7 @@ public class GenericDAO<T extends Persistent>{
             sql = connection.prepareStatement(sqlBuilder.findByCode(clazz, code));
             return sql.executeQuery();
         } catch (SQLException e) {
-            throw new NotUserFinded();
+            throw new NotUserFound();
         }
     }
 
