@@ -25,8 +25,8 @@ public class GenericDAOTests {
             String number = "01";
             int age = 16;
             String permission = "Client";
-            UserController uc = new UserController(name, code, email, adress, number,
-                    permission, age);
+            UserController uc = new UserController(name, age, code, email, adress, number,
+                    permission);
 
             UserController userFind = new UserController();
 
@@ -35,11 +35,11 @@ public class GenericDAOTests {
                 ResultSet rs = genericDAO.findByID(UserController.class, "123456789");
                 if (rs.next()) {
                     userFind.setName(rs.getString("name"));
+                    userFind.setAge(rs.getInt("age"));
                     userFind.setCode(rs.getString("code"));
                     userFind.setEmail(rs.getString("email"));
                     userFind.setAdress(rs.getString("adress"));
                     userFind.setNumber(rs.getString("number"));
-                    userFind.setAge(rs.getInt("age"));
                 }
             } catch (SQLException e) {
                 throw e;
@@ -56,11 +56,11 @@ public class GenericDAOTests {
                 ResultSet rs = genericDAO.findByID(UserController.class, "00000000000");
                 if (rs.next()) {
                     userFinded.setName(rs.getString("name"));
+                    userFinded.setAge(rs.getInt("age"));
                     userFinded.setCode(rs.getString("code"));
                     userFinded.setEmail(rs.getString("email"));
                     userFinded.setAdress(rs.getString("adress"));
                     userFinded.setNumber(rs.getString("number"));
-                    userFinded.setAge(rs.getInt("age"));
                     genericDAO.findByID(UserController.class, "00000000000");
                 }
             } catch (SQLException e) {
@@ -78,8 +78,8 @@ public class GenericDAOTests {
             String number = "01";
             int age = 16;
             String permission = "Client";
-            UserController uc = new UserController(name, code, email, adress, number,
-                    permission, age);
+            UserController uc = new UserController(name, age, code, email, adress, number,
+                    permission);
 
             genericDAO.save(uc);
             genericDAO.deleteAll(UserController.class, "123456789");
@@ -88,11 +88,11 @@ public class GenericDAOTests {
                 ResultSet rs = genericDAO.findByID(UserController.class, "00000000000");
                 if (rs.next()) {
                     userFinded.setName(rs.getString("name"));
+                    userFinded.setAge(rs.getInt("age"));
                     userFinded.setCode(rs.getString("code"));
                     userFinded.setEmail(rs.getString("email"));
                     userFinded.setAdress(rs.getString("adress"));
                     userFinded.setNumber(rs.getString("number"));
-                    userFinded.setAge(rs.getInt("age"));
                     genericDAO.findByID(UserController.class, "00000000000");
                 }
             } catch (SQLException e) {
