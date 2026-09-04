@@ -1,4 +1,4 @@
-package dao.sqlBuilder;
+package genericDAO.sqlBuilder;
 
 import models.Persistent;
 
@@ -10,16 +10,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SQLBuilder<T extends Persistent> {
+    protected final GetSQLInformations sqlInformations = new GetSQLInformations();
 
-    private final GetSQLInformations sqlInformations = new GetSQLInformations();
-
-    public String saveBuilder(Class clazz) {
+    public String saveBuilder(Class<?> clazz) {
         List<String> sqlFields = sqlInformations.getFields(clazz);
 
         return "INSERT INTO " + sqlInformations.getTableName(clazz).toUpperCase() +
-                " (" + String.join(", ", sqlFields) + ") VALUES(" + getValues(sqlFields) + ");";
+                "(" + String.join(", ", sqlFields) + ") VALUES(" + getValues(sqlFields) + ");";
     }
-
     public void saveStatement(PreparedStatement stm, T entity){
         List<String> values = sqlInformations.getFields(entity.getClassType());
         Method getMethod;
@@ -36,22 +34,20 @@ public class SQLBuilder<T extends Persistent> {
 
                 stm.setObject(i + 1, obj);
             }
-        } catch (InvocationTargetException e) {
-            throw new RuntimeException(e);
-        } catch (NoSuchMethodException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        } catch (SQLException e) {
+        } catch (InvocationTargetException | SQLException | NoSuchMethodException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public String findByCode(Class clazz, String code) {
+    public String findByCode(Class<?> clazz, String code) {
         return "SELECT * FROM " + sqlInformations.getTableName(clazz) + " WHERE code = '" + code + "';";
     }
 
-    public String deleteAll(Class clazz, String code) {
+    public String delete(Class<?> clazz, T entity) {
+        return "";
+    }
+
+    public String deleteAll(Class<?> clazz, String code) {
         return "DELETE FROM " + sqlInformations.getTableName(clazz) + " WHERE code = '" + code + "';";
     }
 

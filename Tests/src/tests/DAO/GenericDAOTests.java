@@ -1,9 +1,8 @@
 package tests.DAO;
 
-import dao.GenericDAO;
+import genericDAO.GenericDAO;
 import models.userController.UserController;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 

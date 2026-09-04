@@ -1,4 +1,4 @@
-package dao.sqlBuilder.builderExceptions;
+package genericDAO.sqlBuilder.builderExceptions;
 
 public class NoAnnotationPresentException extends RuntimeException {
     public NoAnnotationPresentException() {
