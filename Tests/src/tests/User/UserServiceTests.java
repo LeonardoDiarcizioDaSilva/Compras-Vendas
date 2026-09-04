@@ -3,6 +3,8 @@ package tests.User;
 import models.IService;
 import models.userController.UserController;
 import models.userController.UserService;
+import models.userController.userThrows.NotUserFound;
+import models.userController.userThrows.UserAlredyExists;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -22,13 +24,14 @@ public class UserServiceTests {
         String number = "333";
         String permission = "CLIENT";
 
-        userService.signUp(name, age, code, email, adress, number, permission);
+        userService.registration(new Object[]{name, age, code, email, adress, number, permission},
+                new Object[]{});
         Assertions.assertNotNull(userService.findById(code));
         userService.delete(code);
     }
     @Test
     void findUserTest() {
-        Assertions.assertNotNull(userService.findById("000000000"));
+        Assertions.assertNotNull(userService.findById("00000000000"));
     }
     @Test
     void userDelete() throws SQLException, NoSuchMethodException {
@@ -40,8 +43,11 @@ public class UserServiceTests {
         String number = "333";
         String permission = "CLIENT";
 
-        userService.signUp(name, age, code, email, adress, number, permission);
+        userService.registration(new Object[]{name, age, code, email, adress, number, permission},
+                new Object[]{});
         userService.delete(code);
-        Assertions.assertNotSame(UserController.class, userService.findById(code));
+        Assertions.assertThrows(NotUserFound.class, () -> {
+            userService.findById(code);
+        });
     }
 }

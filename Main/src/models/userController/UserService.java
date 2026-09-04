@@ -1,6 +1,6 @@
 package models.userController;
 
-import dao.GenericDAO;
+import genericDAO.GenericDAO;
 import models.IService;
 import models.annotations.GetFields;
 import models.userController.userThrows.NoSuchInformations;
@@ -16,29 +16,24 @@ public class UserService implements IService<UserController> {
     private static GenericDAO<UserController> dao = new GenericDAO<>();
 
     @Override
-    public void signUp(Object... args) throws SQLException {
-        UserController us = userCreation(args);
-        if (!userAlredyExists(us.getCode())) {
-            try {
-                Constructor<?> constructor = UserController.class.getDeclaredConstructors()[0];
-                int constructorCount = constructor.getParameterCount();
-                if (constructorCount != args.length)
-                    throw new NoSuchInformations();
-                dao.save(us);
-            } catch (RuntimeException e) {
-                throw e;
+    public void registration(Object[] userArgs, Object[] userAdress) {
+        try {
+            UserController us = userCreation(userArgs);
+            if (userAlredyExists(us.getCode())) {
+                throw new UserAlredyExists();
             }
-            return;
+            dao.save(us);
+        } catch (SQLException | InvocationTargetException | NoSuchMethodException | IllegalAccessException |
+                 InstantiationException e) {
+            throw new RuntimeException();
         }
-        throw new UserAlredyExists();
     }
 
     @Override
     public UserController findById(String code) {
         try {
-            if (!userAlredyExists(code)) {
-                ResultSet rs = dao.findByID(UserController.class, code);
-                return userFinder(rs);
+            if (userAlredyExists(code)) {
+                return userFinder(dao.findByID(UserController.class, code));
             }
             throw new NotUserFound();
         } catch (InvocationTargetException e) {
@@ -58,25 +53,29 @@ public class UserService implements IService<UserController> {
     public void delete(String code) {
         try {
             if (!userAlredyExists(code)) {
-                dao.deleteAll(UserController.class, code);
-                return;
+                throw new NotUserFound();
             }
-            throw new NotUserFound();
-        } catch (SQLException e) {
+            dao.deleteAll(UserController.class, code);
+        } catch (SQLException | InvocationTargetException | NoSuchMethodException | IllegalAccessException |
+                 InstantiationException e) {
             throw new RuntimeException(e);
         }
     }
 
 
-    private boolean userAlredyExists(String code) throws SQLException{
-        Object us = dao.findByID(UserController.class, code);
+    private boolean userAlredyExists(String code) throws SQLException, InvocationTargetException, NoSuchMethodException, IllegalAccessException, InstantiationException {
+        UserController us = userFinder(dao.findByID(UserController.class, code));
 
-        if (us != null)
+        if (us == null)
             return false;
         return true;
     }
 
     private UserController userCreation(Object... args) {
+        int constructorCount = UserController.class.getDeclaredConstructors()[0].getParameterCount();
+        if (constructorCount != args.length)
+            throw new NoSuchInformations();
+
         UserController us = new UserController();
 
         Field[] getFields = UserController.class.getDeclaredFields();
@@ -113,20 +112,23 @@ public class UserService implements IService<UserController> {
     }
 
     private UserController userFinder(ResultSet rs) throws SQLException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException {
-        UserController us = new UserController();
+        UserController us = null;
 
-        Field[] getFields = us.getClassType().getDeclaredFields();
         Method invokeMethod;
 
-        while (rs.next()) {
-            for (Field f : getFields) {
-                if (!f.isAnnotationPresent(GetFields.class)) {
-                    continue;
+        if (rs.next()) {
+            us = new UserController();
+            Field[] getFields = us.getClassType().getDeclaredFields();
+            while (rs.next()) {
+                for (Field f : getFields) {
+                    if (!f.isAnnotationPresent(GetFields.class)) {
+                        continue;
+                    }
+                    Class<?> fieldType = f.getType();
+                    invokeMethod = us.getClassType().getMethod("set" + f.getName().toUpperCase().charAt(0) +
+                            f.getName().substring(1), fieldType);
+                    invokeMethod.invoke(us, rs.getObject(f.getName()));
                 }
-                Class<?> fieldType = f.getType();
-                invokeMethod = us.getClassType().getMethod("set" + f.getName().toUpperCase().charAt(0) +
-                        f.getName().substring(1), fieldType);
-                invokeMethod.invoke(us, rs.getObject(f.getName()));
             }
         }
         return us;

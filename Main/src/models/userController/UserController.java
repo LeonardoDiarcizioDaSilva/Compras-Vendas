@@ -4,7 +4,7 @@ import models.Persistent;
 import models.annotations.GetClass;
 import models.annotations.GetFields;
 
-@GetClass("TB_CLIENT")
+@GetClass(tb_name = "TB_CLIENT", EmbeddedTable = "SQ_CLIENT")
 public class UserController implements Persistent {
 
     @GetFields(name = "name")
@@ -91,7 +91,7 @@ public class UserController implements Persistent {
     }
 
     @Override
-    public Class getClassType() {
+    public Class<?> getClassType() {
         return this.getClass();
     }
 }
